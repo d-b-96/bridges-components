@@ -1,0 +1,40 @@
+<div id="bridges-mat-tab-nav-panel">
+  <nav #nav mat-tab-nav-bar [tabPanel]="tabPanel">
+    <!-- <nav #nav mat-tab-nav-bar [tabPanel]="tabPanel" class="mb-3"> -->
+    <a
+      mat-tab-link
+      *ngFor="let tab of tabs"
+      (click)="activeTabRoute = tab.header"
+      [active]="activeTabRoute === tab.route"
+      [replaceUrl]="true"
+      [routerLink]="[tab.route]"
+      [disabled]="tab.disabled"
+    >
+      {{ tab.header }}
+    </a>
+  </nav>
+  <a class="bridges-mat-tab-nav-panel-a">
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="menu"
+      (click)="$event.stopPropagation()"
+    >
+      <mat-icon aria-label="menu">more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <a
+        *ngFor="let tab of tabs"
+        mat-menu-item
+        [routerLink]="[tab.route]"
+        [disabled]="tab.disabled"
+        [style.pointer-events]="tab.disabled ? 'none' : ''"
+      >
+        {{ tab.header }}
+      </a>
+    </mat-menu>
+  </a>
+
+  <mat-tab-nav-panel class="flex-grow-1" #tabPanel>
+    <router-outlet></router-outlet>
+  </mat-tab-nav-panel>
+</div>

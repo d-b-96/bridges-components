@@ -1,0 +1,53 @@
+// .tabs = .mat-tab-list
+// div.ul = .mat-tab-labels
+// div.li = .mat-tab-label
+
+.accg-tab {
+  .mat-tab-list {
+    .--hidden {
+      display: none !important;
+    }
+
+    .-primary {
+      display: flex !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      font-family: "Ubuntu", sans-serif !important;
+
+      .mat-tab-label {
+        flex-grow: 1 !important;
+        padding: 16px 0px !important;
+        text-align: center !important;
+      }
+
+      .-secondary {
+        .mat-tab-label {
+          border-right: none !important;
+        }
+      }
+
+      &:not(.--jsfied) {
+        overflow-x: auto !important;
+        // overflow-x: clip !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+    }
+
+    .-secondary {
+      display: none !important;
+      position: absolute !important;
+      top: 100% !important;
+      right: 0 !important;
+
+      .mat-tab-label {
+        padding: 10px !important;
+      }
+    }
+
+    &.--show-secondary {
+      .-secondary {
+        display: block !important;
+      }
+    }
+  }
+}

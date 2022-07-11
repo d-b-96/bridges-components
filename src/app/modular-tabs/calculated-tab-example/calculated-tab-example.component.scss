@@ -1,0 +1,80 @@
+.tabs {
+  position: relative !important;
+
+  .--hidden {
+    display: none !important;
+  }
+
+  .-primary {
+    display: flex !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: "Ubuntu", sans-serif !important;
+    background-color: #f92a80 !important;
+    box-shadow: inset 0 2px 5px -1px rgba(0, 0, 0, 0.2) !important;
+    border-bottom: 3px solid #a51a54 !important;
+
+    .li {
+      flex-grow: 1 !important;
+      list-style: none !important;
+      padding: 16px 0 !important;
+      text-align: center !important;
+
+      border-right: 1px solid #de3b3b !important;
+
+      &:last-child {
+        border-right: none !important;
+      }
+      a {
+        color: #fdf !important;
+        text-decoration: none !important;
+      }
+
+      button {
+        background: inherit !important;
+        border: inherit !important;
+        color: #fdf !important;
+        font-family: inherit !important;
+        font-size: inherit !important;
+        outline: none !important;
+        cursor: pointer !important;
+      }
+    }
+
+    .-secondary {
+      .li {
+        border-right: none !important;
+      }
+    }
+
+    &:not(.--jsfied) {
+      // overflow-x: auto !important;
+      overflow-x: clip !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+  }
+
+  .-secondary {
+    display: none !important;
+    position: absolute !important;
+    top: 100% !important;
+    right: 0 !important;
+
+    .li {
+      padding: 10px !important;
+      background-color: #a71d56 !important;
+      box-shadow: inset 0 2px 5px -1px rgba(0, 0, 0, 0.2) !important;
+    }
+  }
+
+  &.--show-secondary {
+    .-secondary {
+      display: block !important;
+    }
+    .-primary {
+      .li:last-child {
+        background: #a71d56 !important;
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+<div id="bridges-mat-tab-group">
+  <mat-tab-group [selectedIndex]="selectedTab" #tabGroup>
+    <ng-content></ng-content>
+  </mat-tab-group>
+
+  <a class="bridges-mat-tab-group-a">
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon aria-label="menu">more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <a
+        *ngFor="let tab of tabs; let i = index"
+        mat-menu-item
+        [disabled]="tab.disabled"
+        [style.pointer-events]="tab.disabled ? 'none' : ''"
+        (click)="changeTab(i)"
+      >
+        {{ tab.header }}
+      </a>
+    </mat-menu>
+  </a>
+</div>
