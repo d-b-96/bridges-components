@@ -4,6 +4,7 @@ import { DummyComponent } from './dummies/dummy/dummy.component';
 import { RoutingDummyFiveComponent } from './dummies/routing-dummy-five/routing-dummy-five.component';
 import { RoutingDummyFourComponent } from './dummies/routing-dummy-four/routing-dummy-four.component';
 import { RoutingDummyOneComponent } from './dummies/routing-dummy-one/routing-dummy-one.component';
+import { RoutingDummySixComponent } from './dummies/routing-dummy-six/routing-dummy-six.component';
 import { RoutingDummyThreeComponent } from './dummies/routing-dummy-three/routing-dummy-three.component';
 import { RoutingDummyTwoComponent } from './dummies/routing-dummy-two/routing-dummy-two.component';
 import { BridgesMatTabGroupComponent } from './modular-tabs/bridges-mat-tab-group/bridges-mat-tab-group.component';
@@ -51,6 +52,10 @@ const routes: Routes = [
   {
     path: 'route-5',
     component: RoutingDummyFiveComponent,
+  },
+  {
+    path: 'route-6',
+    component: RoutingDummySixComponent,
   },
 ];
 

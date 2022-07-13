@@ -1,56 +1,129 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, Sort, SortDirection } from '@angular/material/sort';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { PeriodicElement } from '../bridges-mat-table-demo/bridges-mat-table-demo.component';
+import { HttpClient } from '@angular/common/http';
+import {
+  catchError,
+  map,
+  merge,
+  Observable,
+  switchMap,
+  startWith,
+  of,
+} from 'rxjs';
 
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
-}
-
-export interface BridgesMatColumnDefinition {
+export interface BridgesMatColumnDefinitionElement {
   identifier: string;
   title: string;
-  sticky: boolean;
+  sticky?: boolean;
 }
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
-  { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
-  { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
-  { position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
-  { position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
-  { position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
-  { position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' },
-  { position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
-  { position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
-  { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
-];
 
 @Component({
   selector: 'bridges-mat-table',
   templateUrl: './bridges-mat-table.component.html',
   styleUrls: ['./bridges-mat-table.component.css'],
 })
-export class BridgesMatTableComponent implements OnInit {
-  displayedColumns: BridgesMatColumnDefinition[] = [
-    { identifier: 'select', title: '', sticky: false },
-    { identifier: 'position', title: 'Position', sticky: false },
-    { identifier: 'name', title: 'Name', sticky: false },
-    { identifier: 'weight', title: 'Weight', sticky: false },
-    { identifier: 'symbol', title: 'Symbol', sticky: true },
+export class BridgesMatTableComponent implements OnInit, AfterViewInit {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  // @Input() columnDefinition: BridgesMatColumnDefinitionElement[] = [
+  //   { identifier: 'position', title: 'Position', sticky: true },
+  //   { identifier: 'name', title: 'Name', sticky: true },
+  //   { identifier: 'weight', title: 'Weight' },
+  //   { identifier: 'symbol', title: 'Symbol' },
+  // ];
+  // @Input() data: PeriodicElement[] = [];
+  // @Input() selectVisible: boolean = false;
+  // @Input() selectSticky: boolean = false;
+
+  exampleDatabase!: ExampleHttpDatabase | null;
+  data: GithubIssue[] = [];
+
+  columnDefinition: BridgesMatColumnDefinitionElement[] = [
+    { identifier: 'created_at', title: 'Created', sticky: true },
+    { identifier: 'state', title: 'State', sticky: true },
+    { identifier: 'number', title: 'Number' },
+    { identifier: 'title', title: 'Title' },
   ];
 
-  displayedIdentifiers = this.displayedColumns.map((x) => x.identifier);
-  displayedTitles = this.displayedColumns.map((x) => x.title);
+  selectVisible: boolean = true;
+  selectSticky: boolean = true;
 
-  dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
-  selection = new SelectionModel<PeriodicElement>(true, []);
+  displayedIdentifiers!: string[];
+  displayedTitles!: string[];
 
-  constructor() {}
+  resultsLength = 0;
+  isLoadingResults = true;
+  isRateLimitReached = false;
 
-  ngOnInit(): void {}
+  dataSource = new MatTableDataSource<GithubIssue>(this.data);
+  selection = new SelectionModel<GithubIssue>(true, []);
+
+  constructor(
+    private _liveAnnouncer: LiveAnnouncer,
+    private _httpClient: HttpClient
+  ) {}
+
+  ngOnInit(): void {
+    if (this.selectVisible)
+      this.columnDefinition.unshift({
+        identifier: 'select',
+        title: '',
+        sticky: this.selectSticky,
+      });
+
+    this.displayedIdentifiers = this.columnDefinition.map((x) => x.identifier);
+    this.displayedTitles = this.columnDefinition.map((x) => x.title);
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+
+    this.exampleDatabase = new ExampleHttpDatabase(this._httpClient);
+
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+
+    merge(this.sort.sortChange, this.paginator.page)
+      .pipe(
+        startWith({}),
+        switchMap(() => {
+          this.isLoadingResults = true;
+          return this.exampleDatabase!.getRepoIssues(
+            this.sort.active,
+            this.sort.direction,
+            this.paginator.pageIndex
+          ).pipe(catchError(() => of(null)));
+        }),
+        map((data) => {
+          // Flip flag to show that loading has finished.
+          this.isLoadingResults = false;
+          this.isRateLimitReached = data === null;
+
+          if (data === null) {
+            return [];
+          }
+
+          // Only refresh the result length if there is new data. In case of rate
+          // limit errors, we do not want to reset the paginator to zero, as that
+          // would prevent users from re-triggering requests.
+          this.resultsLength = data.total_count;
+          return data.items;
+        })
+      )
+      .subscribe((data) => (this.dataSource.data = data));
+  }
+
+  getDisplayedIdentifiers() {
+    if (this.selectVisible)
+      return [...'select', this.columnDefinition.map((x) => x.identifier)];
+    else return this.columnDefinition.map((x) => x.identifier);
+  }
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
@@ -69,13 +142,48 @@ export class BridgesMatTableComponent implements OnInit {
     this.selection.select(...this.dataSource.data);
   }
 
-  /** The label for the checkbox on the passed row */
-  checkboxLabel(row?: PeriodicElement): string {
-    if (!row) {
-      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+  /** Announce the change in sort state for assistive technology. */
+  announceSortChange(sortState: Sort) {
+    console.log(sortState);
+    // This example uses English messages. If your application supports
+    // multiple language, you would internationalize these strings.
+    // Furthermore, you can customize the message to add additional
+    // details about the values being sorted.
+    if (sortState.direction) {
+      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+    } else {
+      this._liveAnnouncer.announce('Sorting cleared');
     }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${
-      row.position + 1
+  }
+}
+
+export interface GithubApi {
+  items: GithubIssue[];
+  total_count: number;
+}
+
+export interface GithubIssue {
+  created_at: string;
+  number: string;
+  state: string;
+  title: string;
+}
+
+/** An example database that the data source uses to retrieve data for the table. */
+
+export class ExampleHttpDatabase {
+  constructor(private _httpClient: HttpClient) {}
+
+  getRepoIssues(
+    sort: string,
+    order: SortDirection,
+    page: number
+  ): Observable<GithubApi> {
+    const href = 'https://api.github.com/search/issues';
+    const requestUrl = `${href}?q=repo:angular/components&sort=${sort}&order=${order}&page=${
+      page + 1
     }`;
+
+    return this._httpClient.get<GithubApi>(requestUrl);
   }
 }

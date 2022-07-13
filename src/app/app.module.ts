@@ -22,6 +22,12 @@ import { BridgesMatTabComponent } from './modular-tabs/bridges-mat-tab/bridges-m
 import { BridgesMatTableComponent } from './table/bridges-mat-table/bridges-mat-table.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { RoutingDummySixComponent } from './dummies/routing-dummy-six/routing-dummy-six.component';
+import { MatSortModule } from '@angular/material/sort';
+import { BridgesMatTableDemoComponent } from './table/bridges-mat-table-demo/bridges-mat-table-demo.component';
+import { HttpClientModule } from '@angular/common/http';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'; 
 
 @NgModule({
   declarations: [
@@ -38,6 +44,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     DummyComponent,
     BridgesMatTabComponent,
     BridgesMatTableComponent,
+    RoutingDummySixComponent,
+    BridgesMatTableDemoComponent,
   ],
   imports: [
     BrowserModule,
@@ -49,6 +57,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatTableModule,
     AppRoutingModule,
     MatCheckboxModule,
+    MatPaginatorModule,
+    MatSortModule,
+    HttpClientModule,
+    MatProgressSpinnerModule
   ],
   providers: [],
   bootstrap: [AppComponent],

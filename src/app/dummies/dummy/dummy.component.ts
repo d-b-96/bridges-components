@@ -9,25 +9,29 @@ import { BridgesMatTabNavData } from 'src/app/modular-tabs/bridges-mat-tab-nav-p
 export class DummyComponent implements OnInit {
   tabs: BridgesMatTabNavData[] = [
     {
-      header: 'MatTabGroup Demo',
+      header: 'Route 1',
       route: 'route-1',
     },
     {
-      header: 'MatTable Demo',
+      header: 'Route 2',
       route: 'route-2',
     },
     {
-      header: 'Disabled Route 3',
+      header: 'Route 3',
       route: 'route-3',
-      disabled: true
     },
     {
-      header: 'Route 4',
+      header: 'Disabled Route 4',
       route: 'route-4',
+      disabled: true,
     },
     {
       header: 'Route 5',
       route: 'route-5',
+    },
+    {
+      header: 'Route 6',
+      route: 'route-6',
     },
   ];
 

@@ -1,8 +1,56 @@
-table {
+.table-container {
+    max-height: 500px;
+    overflow-y: auto;
+    position: relative;
+}
+
+.table-container table {
     width: 100%;
+}
+
+::ng-deep .table-container table thead {
+    position: sticky;
+    top: 0px;
+    z-index: 10;
 }
 
 th,
 td {
-    min-width: 100px;
+    min-width: 200px;
+}
+
+.table-container mat-paginator {
+    position: sticky;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 10;
+}
+
+/* spinner */
+.container {
+    position: relative;
+}
+
+.table-container {
+    position: relative;
+    min-height: 200px;
+    max-height: 400px;
+    overflow: auto;
+}
+
+.loading-shade {
+    position: absolute;
+    top: 0;
+    /* top: 56px; */
+    left: 0;
+    bottom: 0;
+    /* bottom: 56px; */
+    right: 0;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 99999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
