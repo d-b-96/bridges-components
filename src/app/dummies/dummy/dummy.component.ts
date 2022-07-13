@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { BridgesMatTabNavData } from 'src/app/modular-tabs/bridges-mat-tab-nav-panel/bridges-mat-tab-nav-panel.component';
 
 @Component({
   selector: 'app-dummy',
