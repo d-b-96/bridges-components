@@ -7,7 +7,8 @@ import { BridgesMatTabNavData } from 'src/app/modular-tabs/bridges-mat-tab-nav-p
   styleUrls: ['./dummy.component.css'],
 })
 export class DummyComponent implements OnInit {
-  tabs: BridgesMatTabNavData[] = [
+  // tabs: BridgesMatTabNavData[] = [
+  tabs = [
     {
       header: 'Route 1',
       route: 'route-1',
