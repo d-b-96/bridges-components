@@ -1,8 +1,8 @@
-<!-- <bridges-mat-table
+<bridges-mat-table
   [columnDefinition]="columnDefinition"
-  [data]="data"
-  [selectVisible]="true"
-  [selectSticky]="true"
-></bridges-mat-table> -->
-
-<bridges-mat-table></bridges-mat-table>
+  [$data]="$data"
+  [selectVisible]="selectVisible"
+  [selectSticky]="selectSticky"
+  (sortOrPageChange)="sortOrPageChanged($event)"
+>
+</bridges-mat-table>

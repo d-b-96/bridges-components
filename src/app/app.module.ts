@@ -27,7 +27,8 @@ import { RoutingDummySixComponent } from './dummies/routing-dummy-six/routing-du
 import { MatSortModule } from '@angular/material/sort';
 import { BridgesMatTableDemoComponent } from './table/bridges-mat-table-demo/bridges-mat-table-demo.component';
 import { HttpClientModule } from '@angular/common/http';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'; 
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { GithubService } from './table/bridges-mat-table-demo/github.service';
 
 @NgModule({
   declarations: [
@@ -60,9 +61,9 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     MatPaginatorModule,
     MatSortModule,
     HttpClientModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
-  providers: [],
+  providers: [GithubService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
