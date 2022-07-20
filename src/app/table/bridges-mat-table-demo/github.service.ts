@@ -8,6 +8,7 @@ export interface GithubApi {
 }
 
 export interface GithubIssue {
+  id: number;
   created_at: string;
   number: string;
   state: string;

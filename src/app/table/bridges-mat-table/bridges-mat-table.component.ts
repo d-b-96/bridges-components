@@ -59,6 +59,10 @@ export class BridgesMatTableComponent implements OnInit, AfterViewInit {
 
   dataSource = new MatTableDataSource<GithubIssue>();
   selection = new SelectionModel<GithubIssue>(true, []);
+  allSelected: boolean = false;
+
+  included: any[] = [];
+  excluded: any[] = [];
 
   totalCount = 0;
 
@@ -74,9 +78,23 @@ export class BridgesMatTableComponent implements OnInit, AfterViewInit {
       });
 
     this.$data.subscribe((data) => {
+      // Remove spinner
       this.isLoadingResults = false;
+
+      // Set data
       this.dataSource.data = data.data;
 
+      // Select correct rows w/ pagination
+      this.dataSource.data.forEach((row) => {
+        if (
+          (this.allSelected && !this.excluded.some((x) => x.id == row.id)) ||
+          (!this.allSelected && this.included.some((x) => x.id == row.id))
+        ) {
+          this.selection.select(row);
+        }
+      });
+
+      // Set totalcount if available
       if (data.totalCount) this.totalCount = data.totalCount;
     });
 
@@ -100,26 +118,80 @@ export class BridgesMatTableComponent implements OnInit, AfterViewInit {
     });
   }
 
+  removeFromArray(list: any[], obj: any) {
+    list.forEach((item, index) => {
+      if (item.id == obj.id) {
+        list.splice(index, 1);
+      }
+    });
+  }
+
   getDisplayedIdentifiers() {
     if (this.selectVisible)
       return [...'select', this.columnDefinition.map((x) => x.identifier)];
     else return this.columnDefinition.map((x) => x.identifier);
   }
 
+  rowSelected(row: any) {
+    this.selection.toggle(row);
+
+    if (this.allSelected) {
+      if (this.isSelected(row)) {
+        // remove from excluded
+        if (this.excluded.some((x) => x.id == row.id)) {
+          this.removeFromArray(this.excluded, row);
+        }
+      } else {
+        // if in excluded => nothing
+        // if not in excluded => add to excluded
+        if (!this.excluded.some((x) => x.id === row.id)) {
+          this.excluded.push(row);
+        }
+      }
+    } else {
+      // add to included or remove from included
+      if (this.isSelected(row)) {
+        // if in included => nothing
+        // if not in included => add to included
+        if (!this.included.some((x) => x.id === row.id)) {
+          this.included.push(row);
+        }
+      } else {
+        // remove this from included
+        if (this.included.some((x) => x.id == row.id)) {
+          this.removeFromArray(this.included, row);
+        }
+      }
+    }
+
+    this.selection.selected.push(row);
+  }
+
+  isSelected(row: any): boolean {
+    return this.selection.isSelected(row);
+  }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
+    return this.allSelected;
+  }
+
+  isIndeterminate() {
+    return (
+      (this.allSelected && this.excluded.length > 0) ||
+      (!this.allSelected && this.included.length > 0)
+    );
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   toggleAllRows() {
-    if (this.isAllSelected()) {
+    this.excluded = [];
+    this.included = [];
+    this.allSelected = !this.allSelected;
+    if (this.allSelected) {
+      this.selection.select(...this.dataSource.data);
+    } else {
       this.selection.clear();
-      return;
     }
-
-    this.selection.select(...this.dataSource.data);
   }
 }
